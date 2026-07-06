@@ -46,3 +46,6 @@ htmlcov/
 
 # Environment Variables
 .env
+
+# Trained AI Model
+src/ai/model.pkl
