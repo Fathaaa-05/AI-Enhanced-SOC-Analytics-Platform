@@ -7,7 +7,6 @@ from src.dashboard.ai_service import get_ai_anomalies
 
 
 def calculate_risk_scores():
-
     logs = fetch_logs()
     alerts = fetch_alerts()
     incidents = fetch_incidents()
@@ -17,54 +16,59 @@ def calculate_risk_scores():
 
     # Failed logins
     for log in logs:
-         if log["username"] == "N/A":
+        if log["username"] == "N/A":
             continue
-         if log["status"] == "Failed Login":
+
+        if log["status"] == "Failed Login":
             risk[log["username"]] += 1
 
     # High severity alerts
     for alert in alerts:
         for log in logs:
+            if log["username"] == "N/A":
+                continue
+
             if log["source_ip"] == alert["source_ip"]:
                 risk[log["username"]] += 5
 
     # Open incidents
     for incident in incidents:
         for log in logs:
+            if log["username"] == "N/A":
+                continue
+
             if log["source_ip"] == incident["source_ip"]:
                 risk[log["username"]] += 10
 
     # AI anomalies
     for anomaly in ai_anomalies:
+        if anomaly["username"] == "N/A":
+            continue
+
         risk[anomaly["username"]] += 8
 
     results = []
+    max_score = max(risk.values()) if risk else 1
 
-max_score = max(risk.values()) if risk else 1
+    for user, raw_score in risk.items():
+        if user == "N/A":
+            continue
 
-for user, raw_score in risk.items():
+        score = int((raw_score / max_score) * 100)
 
-    if user == "N/A":
-        continue
+        if score >= 80:
+            level = "Critical"
+        elif score >= 60:
+            level = "High"
+        elif score >= 30:
+            level = "Medium"
+        else:
+            level = "Low"
 
-    score = int((raw_score / max_score) * 100)
-    
-    if score >= 80:
-        level = "Critical"
-
-    elif score >= 60:
-        level = "High"
-
-    elif score >= 30:
-        level = "Medium"
-
-    else:
-        level = "Low"
-
-    results.append({
-        "username": user,
-        "score": score,
-        "level": level
+        results.append({
+            "username": user,
+            "score": score,
+            "level": level
         })
 
     results.sort(key=lambda x: x["score"], reverse=True)
@@ -73,7 +77,6 @@ for user, raw_score in risk.items():
 
 
 if __name__ == "__main__":
-
     users = calculate_risk_scores()
 
     for user in users:
