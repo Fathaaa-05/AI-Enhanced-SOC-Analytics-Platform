@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual Environment
+venv/
+.env
+
+# VS Code
+.vscode/
+
+# Python Distribution
+build/
+dist/
+*.egg-info/
+
+# Logs
+logs/*.log
+
+# Database
+*.db
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Reports (Optional)
+reports_output/*.pdf
+
+# AI Model Cache
+*.joblib
+
+# Pytest
+.pytest_cache/
+
+# Coverage
+.coverage
+htmlcov/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment Variables
+.env

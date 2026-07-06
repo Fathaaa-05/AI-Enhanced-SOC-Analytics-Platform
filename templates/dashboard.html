@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI SOC Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<header>
+    <div>
+    <span class="status">🟢 System Online</span>
+    <span class="status">User: {{ username }} | Role: {{ role }}</span>
+    <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+</div>
+    <h1>AI-Enhanced SOC Analytics Platform</h1>
+    <span class="status">🟢 System Online</span>
+</header>
+
+<section class="cards">
+    <div class="card">
+        <h3>Total Logs</h3>
+        <p>{{ total_logs }}</p>
+    </div>
+
+    <div class="card">
+        <h3>Total Alerts</h3>
+        <p>{{ total_alerts }}</p>
+    </div>
+
+    <div class="card">
+        <h3>High Severity</h3>
+        <p>{{ high_alerts }}</p>
+    </div>
+
+    <div class="card">
+        <h3>Log Sources</h3>
+        <p>3</p>
+    </div>
+</section>
+
+<section class="grid">
+    <div class="panel">
+        <h2>Attack Statistics</h2>
+        <canvas id="attackChart"></canvas>
+    </div>
+
+    <div class="panel">
+        <h2>Severity Distribution</h2>
+        <canvas id="severityChart"></canvas>
+    </div>
+</section>
+
+<section class="grid">
+    <div class="panel">
+        <div class="panel">
+
+    <h2>🤖 AI Anomalies</h2>
+
+    <table>
+
+        <tr>
+            <th>User</th>
+            <th>IP</th>
+            <th>Source</th>
+            <th>Severity</th>
+        </tr>
+
+        {% for anomaly in ai_anomalies %}
+
+        <tr>
+
+            <td>{{ anomaly.username }}</td>
+
+            <td>{{ anomaly.source_ip }}</td>
+
+            <td>{{ anomaly.source }}</td>
+
+            <td>{{ anomaly.severity }}</td>
+
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+</div>
+        <h2>Recent Alerts</h2>
+        {% for alert in alerts %}
+        <div class="alert-item">
+            <strong>{{ alert.attack }}</strong>
+            <span>{{ alert.source_ip }}</span>
+            <span class="severity">{{ alert.severity }}</span>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="panel">
+        <h2>MITRE ATT&CK</h2>
+        {% for alert in alerts %}
+        <div class="mitre">{{ alert.mitre_technique }}</div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="panel">
+    <h2>Recent Logs</h2>
+
+    <table>
+        <tr>
+            <th>Time</th>
+            <th>Source</th>
+            <th>User</th>
+            <th>IP</th>
+            <th>Status</th>
+            <th>Severity</th>
+        </tr>
+
+        {% for log in logs[:10] %}
+        <tr>
+            <td>{{ log.timestamp }}</td>
+            <td>{{ log.source }}</td>
+            <td>{{ log.username }}</td>
+            <td>{{ log.source_ip }}</td>
+            <td>{{ log.status }}</td>
+            <td>{{ log.severity }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</section>
+
+<script>
+const attackLabels = [{% for alert in alerts %}"{{ alert.attack }}",{% endfor %}];
+const severityData = [{{ high_alerts }}, {{ medium_alerts }}, {{ low_alerts }}];
+</script>
+
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+
+</body>
+</html>
