@@ -1,17 +1,16 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 
-from src.dashboard.services import get_dashboard_data
 from src.auth.auth_service import authenticate_user
+from src.dashboard.services import get_dashboard_data
 from src.database.fetch_alerts import fetch_alerts
 from src.database.incidents import fetch_incidents
 from src.dashboard.ai_service import get_ai_anomalies
-
 
 app = Flask(__name__)
 app.secret_key = "change_this_secret_key"
 
 
-def login_required():
+def is_logged_in():
     return "username" in session
 
 
@@ -37,7 +36,7 @@ def login():
 
 @app.route("/")
 def dashboard():
-    if not login_required():
+    if not is_logged_in():
         return redirect(url_for("login"))
 
     data = get_dashboard_data()
@@ -52,7 +51,7 @@ def dashboard():
 
 @app.route("/alerts")
 def alerts_page():
-    if not login_required():
+    if not is_logged_in():
         return redirect(url_for("login"))
 
     alerts = fetch_alerts()
@@ -67,7 +66,7 @@ def alerts_page():
 
 @app.route("/incidents")
 def incidents_page():
-    if not login_required():
+    if not is_logged_in():
         return redirect(url_for("login"))
 
     incidents = fetch_incidents()
@@ -82,7 +81,7 @@ def incidents_page():
 
 @app.route("/ai")
 def ai_page():
-    if not login_required():
+    if not is_logged_in():
         return redirect(url_for("login"))
 
     ai_anomalies = get_ai_anomalies()
@@ -95,21 +94,9 @@ def ai_page():
     )
 
 
-@app.route("/reports")
-def reports_page():
-    if not login_required():
-        return redirect(url_for("login"))
-
-    return render_template(
-        "reports.html",
-        username=session["username"],
-        role=session["role"]
-    )
-
-
 @app.route("/analytics")
 def analytics_page():
-    if not login_required():
+    if not is_logged_in():
         return redirect(url_for("login"))
 
     data = get_dashboard_data()
@@ -117,6 +104,18 @@ def analytics_page():
     return render_template(
         "analytics.html",
         **data,
+        username=session["username"],
+        role=session["role"]
+    )
+
+
+@app.route("/reports")
+def reports_page():
+    if not is_logged_in():
+        return redirect(url_for("login"))
+
+    return render_template(
+        "reports.html",
         username=session["username"],
         role=session["role"]
     )
