@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block title %}Alerts{% endblock %}
+
+{% block content %}
+
+<section class="panel">
+    <h2>🚨 Security Alerts</h2>
+
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Attack</th>
+            <th>Source IP</th>
+            <th>Severity</th>
+            <th>MITRE</th>
+            <th>Status</th>
+            <th>Detected Time</th>
+        </tr>
+
+        {% for alert in alerts %}
+        <tr>
+            <td>{{ alert.alert_id }}</td>
+            <td>{{ alert.attack }}</td>
+            <td>{{ alert.source_ip }}</td>
+            <td>
+                <span class="badge high">{{ alert.severity }}</span>
+            </td>
+            <td>{{ alert.mitre_technique }}</td>
+            <td>{{ alert.status }}</td>
+            <td>{{ alert.time_detected }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</section>
+
+{% endblock %}
