@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AI SOC Platform{% endblock %}</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<div class="layout">
+
+    <aside class="sidebar">
+
+        <h2>AI SOC</h2>
+
+        <a href="{{ url_for('dashboard') }}">📊 Dashboard</a>
+        <a href="{{ url_for('alerts_page') }}">🚨 Alerts</a>
+        <a href="{{ url_for('incidents_page') }}">📂 Incidents</a>
+        <a href="{{ url_for('ai_page') }}">🤖 AI Engine</a>
+        <a href="{{ url_for('reports_page') }}">📄 Reports</a>
+        <a href="{{ url_for('analytics_page') }}">📈 Analytics</a>
+
+    </aside>
+
+    <main class="main">
+
+        <header class="topbar">
+
+            <div>
+
+                <h1>AI-Enhanced SOC Analytics Platform</h1>
+
+                <p>
+                    Real-Time Threat Detection • AI • Incident Response
+                </p>
+
+            </div>
+
+            <div class="user-box">
+
+                <span>🟢 Online</span>
+
+                <span>
+                    👤 {{ username }} | {{ role }}
+                </span>
+
+                <a href="{{ url_for('logout') }}">
+                    Logout
+                </a>
+
+            </div>
+
+        </header>
+
+        {% block content %}
+
+        {% endblock %}
+
+    </main>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+
+</body>
+</html>

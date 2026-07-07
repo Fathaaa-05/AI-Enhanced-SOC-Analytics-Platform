@@ -1,177 +1,216 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>AI SOC Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
+{% extends "layout.html" %}
 
-<body>
+{% block title %}
+Dashboard
+{% endblock %}
 
-<div class="layout">
+{% block content %}
 
-    <aside class="sidebar">
-        <h2>AI SOC</h2>
-        <a class="active">Dashboard</a>
-        <a>Alerts</a>
-        <a>Incidents</a>
-        <a>AI Engine</a>
-        <a>Reports</a>
-        <a>Analytics</a>
-        <a>Settings</a>
-    </aside>
+<section class="kpi-grid">
 
-    <main class="main">
+    <div class="kpi-card blue">
+        <h3>Total Logs</h3>
+        <p>{{ total_logs }}</p>
+        <span>Collected events</span>
+    </div>
 
-        <header class="topbar">
+    <div class="kpi-card red">
+        <h3>Alerts</h3>
+        <p>{{ total_alerts }}</p>
+        <span>Detected threats</span>
+    </div>
+
+    <div class="kpi-card orange">
+        <h3>Incidents</h3>
+        <p>{{ total_incidents }}</p>
+        <span>Open investigations</span>
+    </div>
+
+    <div class="kpi-card purple">
+        <h3>AI Anomalies</h3>
+        <p>{{ ai_anomalies | length }}</p>
+        <span>ML detections</span>
+    </div>
+
+    <div class="kpi-card green">
+        <h3>Critical Users</h3>
+        <p>{{ critical_users }}</p>
+        <span>High-risk accounts</span>
+    </div>
+
+</section>
+
+<section class="grid-2">
+
+    <div class="panel">
+        <h2>Attack Statistics</h2>
+        <canvas id="attackChart"></canvas>
+    </div>
+
+    <div class="panel">
+        <h2>Severity Distribution</h2>
+        <canvas id="severityChart"></canvas>
+    </div>
+
+</section>
+
+<section class="grid-2">
+
+    <div class="panel">
+        <h2>Recent Alerts</h2>
+
+        {% for alert in alerts[:6] %}
+        <div class="alert-row">
             <div>
-                <h1>AI-Enhanced SOC Analytics Platform</h1>
-                <p>Real-Time Threat Detection | SIEM | AI | Incident Response</p>
+                <strong>{{ alert.attack }}</strong>
+                <p>{{ alert.source_ip }} | {{ alert.mitre_technique }}</p>
             </div>
 
-            <div class="user-box">
-                <span>🟢 Online</span>
-                <span>👤 {{ username }} | {{ role }}</span>
-                <a href="{{ url_for('logout') }}">Logout</a>
-            </div>
-        </header>
+            <span class="badge high">{{ alert.severity }}</span>
+        </div>
+        {% endfor %}
 
-        <section class="kpi-grid">
-            <div class="kpi-card blue">
-                <h3>Total Logs</h3>
-                <p>{{ total_logs }}</p>
-                <span>Collected events</span>
-            </div>
+    </div>
 
-            <div class="kpi-card red">
-                <h3>Alerts</h3>
-                <p>{{ total_alerts }}</p>
-                <span>Detected threats</span>
-            </div>
+    <div class="panel">
 
-            <div class="kpi-card orange">
-                <h3>Incidents</h3>
-                <p>{{ total_incidents }}</p>
-                <span>Open investigations</span>
-            </div>
+        <h2>AI Investigation</h2>
 
-            <div class="kpi-card purple">
-                <h3>AI Anomalies</h3>
-                <p>{{ ai_anomalies | length }}</p>
-                <span>ML detections</span>
+        {% for anomaly in ai_anomalies[:6] %}
+
+        <div class="ai-row">
+
+            <div>
+                <strong>{{ anomaly.username }}</strong>
+
+                <p>
+                    {{ anomaly.source_ip }}
+                    |
+                    {{ anomaly.source }}
+                    |
+                    {{ anomaly.status }}
+                </p>
+
             </div>
 
-            <div class="kpi-card green">
-                <h3>Critical Users</h3>
-                <p>{{ critical_users }}</p>
-                <span>High-risk accounts</span>
-            </div>
-        </section>
+            <span class="badge high">
+                {{ anomaly.severity }}
+            </span>
 
-        <section class="grid-2">
-            <div class="panel">
-                <h2>Attack Statistics</h2>
-                <canvas id="attackChart"></canvas>
-            </div>
+        </div>
 
-            <div class="panel">
-                <h2>Severity Distribution</h2>
-                <canvas id="severityChart"></canvas>
-            </div>
-        </section>
+        {% endfor %}
 
-        <section class="grid-2">
-            <div class="panel">
-                <h2>Recent Alerts</h2>
+    </div>
 
-                {% for alert in alerts[:6] %}
-                <div class="alert-row">
-                    <div>
-                        <strong>{{ alert.attack }}</strong>
-                        <p>{{ alert.source_ip }} | {{ alert.mitre_technique }}</p>
-                    </div>
-                    <span class="badge high">{{ alert.severity }}</span>
-                </div>
-                {% endfor %}
+</section>
+
+<section class="grid-2">
+
+    <div class="panel">
+
+        <h2>Top Risk Users</h2>
+
+        {% for user in risk_users[:6] %}
+
+        <div class="risk-row">
+
+            <span>{{ user.username }}</span>
+
+            <div class="risk-bar">
+                <div style="width: {{ user.score }}%"></div>
             </div>
 
-            <div class="panel">
-                <h2>AI Investigation</h2>
+            <strong>{{ user.score }}</strong>
 
-                {% for anomaly in ai_anomalies[:6] %}
-                <div class="ai-row">
-                    <strong>{{ anomaly.username }}</strong>
-                    <p>{{ anomaly.source_ip }} | {{ anomaly.source }} | {{ anomaly.status }}</p>
-                    <span class="badge high">{{ anomaly.severity }}</span>
-                </div>
-                {% endfor %}
-            </div>
-        </section>
+            <span class="badge">{{ user.level }}</span>
 
-        <section class="grid-2">
-            <div class="panel">
-                <h2>Top Risk Users</h2>
+        </div>
 
-                {% for user in risk_users[:6] %}
-                <div class="risk-row">
-                    <span>{{ user.username }}</span>
-                    <div class="risk-bar">
-                        <div style="width: {{ user.score }}%"></div>
-                    </div>
-                    <strong>{{ user.score }}</strong>
-                    <span class="badge">{{ user.level }}</span>
-                </div>
-                {% endfor %}
-            </div>
+        {% endfor %}
 
-            <div class="panel">
-                <h2>Recent Incidents</h2>
+    </div>
 
-                {% for incident in incidents[:6] %}
-                <div class="incident-row">
-                    <strong>#{{ incident.incident_id }} - {{ incident.attack }}</strong>
-                    <p>{{ incident.source_ip }} | {{ incident.assigned_to }} | {{ incident.status }}</p>
-                </div>
-                {% endfor %}
-            </div>
-        </section>
+    <div class="panel">
 
-        <section class="panel">
-            <h2>Recent Logs</h2>
+        <h2>Recent Incidents</h2>
 
-            <table>
-                <tr>
-                    <th>Time</th>
-                    <th>Source</th>
-                    <th>User</th>
-                    <th>IP</th>
-                    <th>Status</th>
-                    <th>Severity</th>
-                </tr>
+        {% for incident in incidents[:6] %}
 
-                {% for log in logs[:10] %}
-                <tr>
-                    <td>{{ log.timestamp }}</td>
-                    <td>{{ log.source }}</td>
-                    <td>{{ log.username }}</td>
-                    <td>{{ log.source_ip }}</td>
-                    <td>{{ log.status }}</td>
-                    <td>{{ log.severity }}</td>
-                </tr>
-                {% endfor %}
-            </table>
-        </section>
+        <div class="incident-row">
 
-    </main>
+            <strong>
+                #{{ incident.incident_id }}
+                -
+                {{ incident.attack }}
+            </strong>
 
-</div>
+            <p>
+                {{ incident.source_ip }}
+                |
+                {{ incident.assigned_to }}
+                |
+                {{ incident.status }}
+            </p>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+<section class="panel">
+
+    <h2>Recent Logs</h2>
+
+    <table>
+
+        <tr>
+
+            <th>Time</th>
+            <th>Source</th>
+            <th>User</th>
+            <th>IP</th>
+            <th>Status</th>
+            <th>Severity</th>
+
+        </tr>
+
+        {% for log in logs[:10] %}
+
+        <tr>
+
+            <td>{{ log.timestamp }}</td>
+            <td>{{ log.source }}</td>
+            <td>{{ log.username }}</td>
+            <td>{{ log.source_ip }}</td>
+            <td>{{ log.status }}</td>
+            <td>{{ log.severity }}</td>
+
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+</section>
 
 <script>
-    const attackLabels = [{% for alert in alerts[:10] %}"{{ alert.attack }}",{% endfor %}];
-    const severityData = [{{ high_alerts }}, {{ medium_alerts }}, {{ low_alerts }}];
+
+const attackLabels = [
+{% for alert in alerts[:10] %}
+"{{ alert.attack }}",
+{% endfor %}
+];
+
+const severityData = [
+{{ high_alerts }},
+{{ medium_alerts }},
+{{ low_alerts }}
+];
+
 </script>
 
-<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
-
-</body>
-</html>
+{% endblock %}
