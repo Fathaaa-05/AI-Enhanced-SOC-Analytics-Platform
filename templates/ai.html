@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block title %}AI Detection{% endblock %}
+
+{% block content %}
+
+<div class="panel">
+
+    <h2>🤖 AI Anomaly Detection Center</h2>
+
+    <p style="color:#94a3b8;">
+        Machine-learning based anomaly detection using Isolation Forest.
+    </p>
+
+    <table>
+        <tr>
+            <th>User</th>
+            <th>Source IP</th>
+            <th>Source</th>
+            <th>Status</th>
+            <th>Severity</th>
+            <th>AI Recommendation</th>
+        </tr>
+
+        {% for anomaly in ai_anomalies %}
+        <tr>
+            <td>{{ anomaly.username }}</td>
+            <td>{{ anomaly.source_ip }}</td>
+            <td>{{ anomaly.source }}</td>
+            <td>{{ anomaly.status }}</td>
+            <td>
+                <span class="badge high">{{ anomaly.severity }}</span>
+            </td>
+            <td>
+                Investigate user activity, verify login source, and review related logs.
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</div>
+
+{% endblock %}
