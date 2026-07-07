@@ -1,0 +1,134 @@
+{% extends "layout.html" %}
+
+{% block title %}Incident Management{% endblock %}
+
+{% block content %}
+
+<div class="panel">
+
+    <h2>📂 Incident Management</h2>
+
+    <input
+        type="text"
+        id="incidentSearch"
+        placeholder="Search by attack, IP, analyst..."
+        style="width:100%;padding:10px;margin-bottom:20px;">
+
+    <table id="incidentTable">
+
+        <thead>
+
+            <tr>
+                <th>ID</th>
+                <th>Attack</th>
+                <th>Source IP</th>
+                <th>Severity</th>
+                <th>MITRE</th>
+                <th>Priority</th>
+                <th>Assigned To</th>
+                <th>Status</th>
+                <th>Created</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        {% for incident in incidents %}
+
+        <tr>
+
+            <td>{{ incident.incident_id }}</td>
+
+            <td>{{ incident.attack }}</td>
+
+            <td>{{ incident.source_ip }}</td>
+
+            <td>
+
+                {% if incident.severity == "Critical" %}
+                    <span class="badge high">Critical</span>
+
+                {% elif incident.severity == "High" %}
+                    <span class="badge high">High</span>
+
+                {% elif incident.severity == "Medium" %}
+                    <span class="badge medium">Medium</span>
+
+                {% else %}
+                    <span class="badge low">Low</span>
+
+                {% endif %}
+
+            </td>
+
+            <td>{{ incident.mitre_technique }}</td>
+
+            <td>
+
+                {% if incident.priority == "Critical" %}
+                    <span class="badge high">Critical</span>
+
+                {% elif incident.priority == "High" %}
+                    <span class="badge high">High</span>
+
+                {% elif incident.priority == "Medium" %}
+                    <span class="badge medium">Medium</span>
+
+                {% else %}
+                    <span class="badge low">Low</span>
+
+                {% endif %}
+
+            </td>
+
+            <td>{{ incident.assigned_to }}</td>
+
+            <td>
+
+                {% if incident.status == "Open" %}
+                    <span class="badge high">Open</span>
+                {% else %}
+                    <span class="badge low">
+                        {{ incident.status }}
+                    </span>
+                {% endif %}
+
+            </td>
+
+            <td>{{ incident.created_at }}</td>
+
+        </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<script>
+
+const search = document.getElementById("incidentSearch");
+
+search.addEventListener("keyup", function(){
+
+    let filter = this.value.toLowerCase();
+
+    let rows = document.querySelectorAll("#incidentTable tbody tr");
+
+    rows.forEach(function(row){
+
+        row.style.display =
+            row.innerText.toLowerCase().includes(filter)
+            ? ""
+            : "none";
+
+    });
+
+});
+
+</script>
+
+{% endblock %}
