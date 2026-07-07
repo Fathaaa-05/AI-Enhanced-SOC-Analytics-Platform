@@ -1,0 +1,78 @@
+{% extends "layout.html" %}
+
+{% block title %}SOC Reports{% endblock %}
+
+{% block content %}
+
+<div class="panel">
+
+    <h2>📄 SOC Report Center</h2>
+
+    <p style="margin-bottom:20px;color:#94a3b8;">
+        Generate, manage and download SOC investigation reports.
+    </p>
+
+    <button
+        onclick="window.location.href='/generate-report'"
+        style="
+        background:#2563eb;
+        color:white;
+        padding:12px 22px;
+        border:none;
+        border-radius:8px;
+        cursor:pointer;
+        margin-bottom:25px;">
+
+        ➕ Generate New Report
+
+    </button>
+
+    <table>
+
+        <tr>
+
+            <th>Report</th>
+
+            <th>Date</th>
+
+            <th>Status</th>
+
+            <th>Download</th>
+
+        </tr>
+
+        {% for report in reports %}
+
+        <tr>
+
+            <td>{{ report.filename }}</td>
+
+            <td>{{ report.date }}</td>
+
+            <td>
+                <span class="badge low">
+                    Ready
+                </span>
+            </td>
+
+            <td>
+
+                <a
+                    href="{{ url_for('download_report', filename=report.filename) }}"
+                    class="download-btn">
+
+                    Download
+
+                </a>
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+</div>
+
+{% endblock %}
