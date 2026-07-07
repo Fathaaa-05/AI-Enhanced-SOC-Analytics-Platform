@@ -1,0 +1,89 @@
+{% extends "layout.html" %}
+
+{% block title %}Security Analytics{% endblock %}
+
+{% block content %}
+
+<section class="kpi-grid">
+    <div class="kpi-card red">
+        <h3>Total Alerts</h3>
+        <p>{{ total_alerts }}</p>
+        <span>Detected threats</span>
+    </div>
+
+    <div class="kpi-card orange">
+        <h3>Total Incidents</h3>
+        <p>{{ total_incidents }}</p>
+        <span>Cases created</span>
+    </div>
+
+    <div class="kpi-card purple">
+        <h3>AI Anomalies</h3>
+        <p>{{ ai_anomalies | length }}</p>
+        <span>ML detections</span>
+    </div>
+
+    <div class="kpi-card green">
+        <h3>Critical Users</h3>
+        <p>{{ critical_users }}</p>
+        <span>High-risk accounts</span>
+    </div>
+</section>
+
+<section class="grid-2">
+    <div class="panel">
+        <h2>Attack Type Distribution</h2>
+        <canvas id="analyticsAttackChart"></canvas>
+    </div>
+
+    <div class="panel">
+        <h2>Severity Distribution</h2>
+        <canvas id="analyticsSeverityChart"></canvas>
+    </div>
+</section>
+
+<section class="grid-2">
+    <div class="panel">
+        <h2>Top Risk Users</h2>
+
+        {% for user in risk_users[:10] %}
+        <div class="risk-row">
+            <span>{{ user.username }}</span>
+
+            <div class="risk-bar">
+                <div style="width: {{ user.score }}%"></div>
+            </div>
+
+            <strong>{{ user.score }}</strong>
+            <span class="badge">{{ user.level }}</span>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="panel">
+        <h2>MITRE ATT&CK Summary</h2>
+
+        {% for alert in alerts[:10] %}
+        <div class="incident-row">
+            <strong>{{ alert.mitre_technique }}</strong>
+            <p>{{ alert.attack }} | {{ alert.source_ip }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<script>
+    const analyticsAttackLabels = [
+        {% for alert in alerts[:10] %}
+            "{{ alert.attack }}",
+        {% endfor %}
+    ];
+
+    const analyticsSeverityData = [
+        {{ high_alerts }},
+        {{ medium_alerts }},
+        {{ low_alerts }}
+    ];
+</script>
+
+{% endblock %}
