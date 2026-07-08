@@ -1,3 +1,4 @@
+from src.database.insert_live_windows_logs import insert_live_windows_logs
 from src.reports.pdf_report import generate_incident_report
 import os
 from flask import send_from_directory
@@ -159,6 +160,16 @@ def reports_page():
         role=session["role"]
 
     )
+
+@app.route("/collect-live-logs")
+def collect_live_logs():
+
+    if not is_logged_in():
+        return redirect(url_for("login"))
+
+    insert_live_windows_logs()
+
+    return redirect(url_for("dashboard"))
 
 @app.route("/generate-report")
 def generate_report():
