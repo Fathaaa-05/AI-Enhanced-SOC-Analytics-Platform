@@ -49,3 +49,19 @@ htmlcov/
 
 # Trained AI Model
 src/ai/model.pkl
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Environment
+.env
+
+# Reports
+reports_output/
+
+# IDE
+.idea/
+
+# OS files
+Desktop.ini
