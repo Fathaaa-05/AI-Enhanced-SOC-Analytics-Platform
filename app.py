@@ -1,3 +1,4 @@
+from src.services.pipeline_service import execute_pipeline
 from src.database.insert_live_windows_logs import insert_live_windows_logs
 from src.reports.pdf_report import generate_incident_report
 import os
@@ -167,7 +168,7 @@ def collect_live_logs():
     if not is_logged_in():
         return redirect(url_for("login"))
 
-    insert_live_windows_logs()
+    execute_pipeline()
 
     return redirect(url_for("dashboard"))
 
@@ -179,6 +180,21 @@ def generate_report():
     generate_incident_report()
 
     return redirect(url_for("reports_page"))
+
+@app.route("/api/dashboard-summary")
+def dashboard_summary():
+    if not is_logged_in():
+        return {"error": "Unauthorized"}, 401
+
+    data = get_dashboard_data()
+
+    return {
+        "total_logs": data["total_logs"],
+        "total_alerts": data["total_alerts"],
+        "total_incidents": data["total_incidents"],
+        "ai_anomalies": len(data["ai_anomalies"]),
+        "critical_users": data["critical_users"]
+    }
 
 
 @app.route("/logout")

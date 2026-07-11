@@ -485,3 +485,24 @@ input[type="text"]::placeholder{
 ::-webkit-scrollbar-thumb:hover{
     background:#475569;
 }
+
+.live-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #dc2626;
+    color: white;
+    padding: 14px 20px;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    opacity: 0;
+    transform: translateY(-15px);
+    pointer-events: none;
+    transition: 0.3s ease;
+    z-index: 9999;
+}
+
+.live-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}

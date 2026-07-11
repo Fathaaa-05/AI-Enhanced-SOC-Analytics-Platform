@@ -95,3 +95,78 @@ if (typeof analyticsSeverityData !== "undefined") {
         }
     });
 }
+
+let previousAlertCount = null;
+
+async function refreshDashboardSummary() {
+    try {
+        const response = await fetch("/api/dashboard-summary");
+
+        if (!response.ok) {
+            return;
+        }
+
+        const data = await response.json();
+
+        const totalLogs = document.getElementById("totalLogs");
+        const totalAlerts = document.getElementById("totalAlerts");
+        const totalIncidents = document.getElementById("totalIncidents");
+        const totalAIAnomalies = document.getElementById("totalAIAnomalies");
+        const criticalUsers = document.getElementById("criticalUsers");
+
+        if (totalLogs) {
+            totalLogs.textContent = data.total_logs;
+        }
+
+        if (totalAlerts) {
+            totalAlerts.textContent = data.total_alerts;
+        }
+
+        if (totalIncidents) {
+            totalIncidents.textContent = data.total_incidents;
+        }
+
+        if (totalAIAnomalies) {
+            totalAIAnomalies.textContent = data.ai_anomalies;
+        }
+
+        if (criticalUsers) {
+            criticalUsers.textContent = data.critical_users;
+        }
+
+        if (
+            previousAlertCount !== null &&
+            data.total_alerts > previousAlertCount
+        ) {
+            showLiveToast(
+                `${data.total_alerts - previousAlertCount} new alert(s) detected`
+            );
+        }
+
+        previousAlertCount = data.total_alerts;
+
+    } catch (error) {
+        console.error("Dashboard refresh failed:", error);
+    }
+}
+
+
+function showLiveToast(message) {
+    const toast = document.getElementById("liveToast");
+
+    if (!toast) {
+        return;
+    }
+
+    toast.textContent = message;
+    toast.classList.add("show");
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+    }, 4000);
+}
+
+
+refreshDashboardSummary();
+
+setInterval(refreshDashboardSummary, 5000);

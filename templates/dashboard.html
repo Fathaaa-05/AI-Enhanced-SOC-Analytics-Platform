@@ -26,36 +26,38 @@
     </a>
 
 </section>
-
+<div id="liveToast" class="live-toast">
+    New security alert detected.
+</div>
 <section class="kpi-grid">
 
     <div class="kpi-card blue">
         <h3>Total Logs</h3>
-        <p>{{ total_logs }}</p>
+        <p id="totallogs">{{ total_logs }}</p>
         <span>Collected events</span>
     </div>
 
     <div class="kpi-card red">
         <h3>Alerts</h3>
-        <p>{{ total_alerts }}</p>
+        <p id="totalAlerts">{{ total_alerts }}</p>
         <span>Detected threats</span>
     </div>
 
     <div class="kpi-card orange">
         <h3>Incidents</h3>
-        <p>{{ total_incidents }}</p>
+        <p id="totalIncidents">{{ total_incidents }}</p>
         <span>Open investigations</span>
     </div>
 
     <div class="kpi-card purple">
         <h3>AI Anomalies</h3>
-        <p>{{ ai_anomalies | length }}</p>
+        <p id="totaAIAnomalies">{{ ai_anomalies | length }}</p>
         <span>ML detections</span>
     </div>
 
     <div class="kpi-card green">
         <h3>Critical Users</h3>
-        <p>{{ critical_users }}</p>
+        <p id="criticalUsers">{{ critical_users }}</p>
         <span>High-risk accounts</span>
     </div>
 

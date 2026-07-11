@@ -10,13 +10,14 @@ def insert_live_windows_logs():
 
     query = """
     INSERT INTO logs
-    (timestamp, source, username, source_ip, event_type, status, severity, destination_port)
-    VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
+    (timestamp, event_id, source, username, source_ip, event_type, status, severity, destination_port)
+    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
     """
 
     for log in logs:
         cursor.execute(query, (
             log["timestamp"],
+            log["event_id"],
             log["source"],
             log["username"],
             log["source_ip"],
