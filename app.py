@@ -1,10 +1,18 @@
-from src.services.pipeline_service import execute_pipeline
-from src.database.insert_live_windows_logs import insert_live_windows_logs
-from src.reports.pdf_report import generate_incident_report
 import os
-from flask import send_from_directory
-from flask import Flask, render_template, request, redirect, url_for, session
 
+from dotenv import load_dotenv
+from flask import (
+    Flask,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    session,
+    send_from_directory
+)
+
+from src.services.pipeline_service import execute_pipeline
+from src.reports.pdf_report import generate_incident_report
 from src.auth.auth_service import authenticate_user
 from src.dashboard.services import get_dashboard_data
 from src.database.fetch_alerts import fetch_alerts
@@ -12,7 +20,12 @@ from src.database.incidents import fetch_incidents
 from src.dashboard.ai_service import get_ai_anomalies
 
 app = Flask(__name__)
-app.secret_key = "change_this_secret_key"
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
 
 def is_logged_in():
@@ -164,11 +177,13 @@ def reports_page():
 
 @app.route("/collect-live-logs")
 def collect_live_logs():
-
     if not is_logged_in():
         return redirect(url_for("login"))
 
-    execute_pipeline()
+    try:
+        execute_pipeline()
+    except RuntimeError as error:
+        print(f"Live collector unavailable: {error}")
 
     return redirect(url_for("dashboard"))
 

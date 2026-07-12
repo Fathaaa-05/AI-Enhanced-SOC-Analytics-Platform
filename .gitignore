@@ -65,3 +65,5 @@ reports_output/
 
 # OS files
 Desktop.ini
+
+*.sql
