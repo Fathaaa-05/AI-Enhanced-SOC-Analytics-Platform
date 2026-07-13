@@ -1,3 +1,5 @@
+from werkzeug.security import check_password_hash
+
 from src.database.mysql import get_connection
 
 
@@ -5,25 +7,31 @@ def authenticate_user(username, password):
     connection = get_connection()
     cursor = connection.cursor(dictionary=True)
 
-    query = """
-    SELECT username, role
-    FROM users
-    WHERE username=%s AND password=%s
-    """
+    try:
+        cursor.execute(
+            """
+            SELECT username, password, role
+            FROM users
+            WHERE username = %s
+            LIMIT 1
+            """,
+            (username,)
+        )
 
-    cursor.execute(query, (username, password))
-    user = cursor.fetchone()
+        user = cursor.fetchone()
 
-    cursor.close()
-    connection.close()
+        if not user:
+            return {"success": False}
 
-    if user:
+        if not check_password_hash(user["password"], password):
+            return {"success": False}
+
         return {
             "success": True,
             "username": user["username"],
             "role": user["role"]
         }
 
-    return {
-        "success": False
-    }
+    finally:
+        cursor.close()
+        connection.close()
