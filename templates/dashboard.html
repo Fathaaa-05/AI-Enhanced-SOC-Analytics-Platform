@@ -4,6 +4,51 @@
 
 {% block content %}
 
+<section class="executive-overview">
+
+    <div class="section-heading">
+        <div>
+            <h2>🤖 AI Security Overview</h2>
+            <p>Executive summary of the current SOC environment.</p>
+        </div>
+    </div>
+
+    <div class="executive-grid">
+
+        <div class="executive-card">
+            <span>Total Security Events</span>
+            <strong>{{ executive_summary.total_logs }}</strong>
+        </div>
+
+        <div class="executive-card">
+            <span>Open Incidents</span>
+            <strong>{{ executive_summary.open_incidents }}</strong>
+        </div>
+
+        <div class="executive-card">
+            <span>Resolved Incidents</span>
+            <strong>{{ executive_summary.resolved_incidents }}</strong>
+        </div>
+
+        <div class="executive-card">
+            <span>Top Attack</span>
+            <strong>{{ executive_summary.top_attack }}</strong>
+        </div>
+
+        <div class="executive-card">
+            <span>Most Targeted User</span>
+            <strong>{{ executive_summary.top_user }}</strong>
+        </div>
+
+        <div class="executive-card">
+            <span>Top Source IP</span>
+            <strong>{{ executive_summary.top_ip }}</strong>
+        </div>
+
+    </div>
+
+</section>
+
 <section style="margin-bottom:20px;">
 
     <a href="{{ url_for('collect_live_logs') }}">

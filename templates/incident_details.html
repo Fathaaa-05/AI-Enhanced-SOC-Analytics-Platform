@@ -1,0 +1,304 @@
+{% extends "layout.html" %}
+
+{% block title %}Incident #{{ incident.incident_id }}{% endblock %}
+
+{% block content %}
+
+<section class="incident-details-header">
+    <div>
+        <a href="{{ url_for('incidents_page') }}" class="back-link">
+            ← Back to Incidents
+        </a>
+
+        <h2>🚨 Incident #{{ incident.incident_id }}</h2>
+        <p>Security investigation workspace</p>
+    </div>
+
+    <div>
+        <span class="badge {{ incident.severity | lower }}">
+            {{ incident.severity }}
+        </span>
+
+        <span class="badge status-badge">
+            {{ incident.status }}
+        </span>
+    </div>
+</section>
+
+<section class="incident-summary-grid">
+
+    <div class="detail-card">
+        <span>Attack</span>
+        <strong>{{ incident.attack }}</strong>
+    </div>
+
+    <div class="detail-card">
+        <span>MITRE ATT&CK</span>
+        <strong>{{ incident.mitre_technique }}</strong>
+    </div>
+
+    <div class="detail-card">
+        <span>Source IP</span>
+        <strong>{{ incident.source_ip }}</strong>
+    </div>
+
+    <div class="detail-card">
+        <span>Priority</span>
+        <strong>{{ incident.priority }}</strong>
+    </div>
+
+    <div class="detail-card">
+        <span>Assigned To</span>
+        <strong>{{ incident.assigned_to }}</strong>
+    </div>
+
+    <div class="detail-card">
+        <span>Created</span>
+        <strong>{{ incident.created_at }}</strong>
+    </div>
+
+</section>
+
+<section class="panel">
+    <h3>Description</h3>
+    <p>{{ incident.description or "No description available." }}</p>
+</section>
+
+<section class="panel">
+    <div class="panel-heading">
+        <div>
+            <h3>AI Risk Assessment</h3>
+            <p class="muted-text">
+                Automated assessment based on incident severity and related evidence.
+            </p>
+        </div>
+
+        <span class="risk-level risk-{{ risk_assessment.threat_level | lower }}">
+            {{ risk_assessment.threat_level }}
+        </span>
+    </div>
+
+    <div class="risk-layout">
+
+        <div class="risk-score-card">
+            <div class="risk-score-number">
+                {{ risk_assessment.score }}
+            </div>
+
+            <div class="risk-score-label">
+                Risk Score / 100
+            </div>
+
+            <div class="risk-progress">
+                <div
+                    class="risk-progress-fill"
+                    style="width: {{ risk_assessment.score }}%;">
+                </div>
+            </div>
+
+            <p>
+                Confidence: {{ risk_assessment.confidence }}%
+            </p>
+        </div>
+
+        <div class="risk-details">
+
+            <div>
+                <h4>Risk Indicators</h4>
+
+                <ul>
+                    {% for reason in risk_assessment.reasons %}
+                        <li>{{ reason }}</li>
+                    {% else %}
+                        <li>No additional risk indicators found.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div>
+                <h4>Recommended Actions</h4>
+
+                <ul>
+                    {% for action in risk_assessment.recommendations %}
+                        <li>{{ action }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+<section class="panel">
+    <div class="panel-heading">
+        <div>
+            <h3>Investigation Timeline</h3>
+            <p class="muted-text">
+                Recent security events related to {{ incident.source_ip }}.
+            </p>
+        </div>
+    </div>
+
+    {% if related_logs %}
+        <div class="timeline">
+
+            {% for log in related_logs %}
+                <div class="timeline-item">
+
+                    <div class="timeline-marker
+                        {% if log.severity == 'High' %}
+                            timeline-high
+                        {% elif log.severity == 'Medium' %}
+                            timeline-medium
+                        {% else %}
+                            timeline-low
+                        {% endif %}
+                    "></div>
+
+                    <div class="timeline-time">
+                        {{ log.timestamp }}
+                    </div>
+
+                    <div class="timeline-content">
+                        <div class="timeline-title">
+                            <strong>
+                                {{ log.event_type or "Security Event" }}
+                            </strong>
+
+                            <span class="badge {{ log.severity | lower }}">
+                                {{ log.severity }}
+                            </span>
+                        </div>
+
+                        <p>{{ log.status }}</p>
+
+                        <div class="timeline-metadata">
+                            <span>
+                                Event ID:
+                                {{ log.event_id or "N/A" }}
+                            </span>
+
+                            <span>
+                                User:
+                                {{ log.username or "N/A" }}
+                            </span>
+
+                            <span>
+                                Source:
+                                {{ log.source_ip }}
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+            {% endfor %}
+
+        </div>
+    {% else %}
+        <p class="muted-text">
+            No related security logs were found for this incident.
+        </p>
+    {% endif %}
+</section>
+
+<section class="panel investigation-panel">
+    <div class="panel-heading">
+        <div>
+            <h3>Investigation Management</h3>
+            <p class="muted-text">
+                Update the case status, analyst assignment and notes.
+            </p>
+        </div>
+    </div>
+
+    {% if success %}
+        <div class="form-message success-message">
+            {{ success }}
+        </div>
+    {% endif %}
+
+    {% if error %}
+        <div class="form-message error-message">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <form method="POST" class="incident-form">
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label for="status">Incident Status</label>
+
+                <select id="status" name="status" required>
+                    <option value="Open"
+                        {% if incident.status == "Open" %}selected{% endif %}>
+                        Open
+                    </option>
+
+                    <option value="Investigating"
+                        {% if incident.status == "Investigating" %}selected{% endif %}>
+                        Investigating
+                    </option>
+
+                    <option value="Resolved"
+                        {% if incident.status == "Resolved" %}selected{% endif %}>
+                        Resolved
+                    </option>
+
+                    <option value="Closed"
+                        {% if incident.status == "Closed" %}selected{% endif %}>
+                        Closed
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="assigned_to">Assigned Analyst</label>
+
+                <select id="assigned_to" name="assigned_to" required>
+                    <option value="SOC Analyst"
+                        {% if incident.assigned_to == "SOC Analyst" %}selected{% endif %}>
+                        SOC Analyst
+                    </option>
+
+                    <option value="Tier 1 Analyst"
+                        {% if incident.assigned_to == "Tier 1 Analyst" %}selected{% endif %}>
+                        Tier 1 Analyst
+                    </option>
+
+                    <option value="Tier 2 Analyst"
+                        {% if incident.assigned_to == "Tier 2 Analyst" %}selected{% endif %}>
+                        Tier 2 Analyst
+                    </option>
+
+                    <option value="Incident Manager"
+                        {% if incident.assigned_to == "Incident Manager" %}selected{% endif %}>
+                        Incident Manager
+                    </option>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="form-group">
+            <label for="notes">Investigation Notes</label>
+
+            <textarea
+                id="notes"
+                name="notes"
+                rows="8"
+                placeholder="Document findings, evidence and actions taken..."
+                >
+                {{ incident.notes or "" }}</textarea>
+            </div>
+
+        <button type="submit" class="save-incident-button">
+            Save Incident Changes
+        </button>
+
+    </form>
+</section>
+
+{% endblock %}

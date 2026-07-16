@@ -37,8 +37,13 @@
         {% for incident in incidents %}
 
         <tr>
-
-            <td>{{ incident.incident_id }}</td>
+            <td>
+                <a
+                href="{{ url_for('incident_details_page', incident_id=incident.incident_id) }}"
+                class="incident-link">
+                #{{ incident.incident_id }}
+            </a>
+        </td>
 
             <td>{{ incident.attack }}</td>
 
